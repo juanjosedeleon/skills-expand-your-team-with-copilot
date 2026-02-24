@@ -519,6 +519,35 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Build share URL and text for social platforms
+    const activityShareUrl = `${window.location.href.split("#")[0]}#${encodeURIComponent(name)}`;
+    const shareText = encodeURIComponent(
+      `Check out "${name}" at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`
+    );
+    const shareUrl = encodeURIComponent(activityShareUrl);
+
+    const shareButtonsHtml = `
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <a class="share-btn share-twitter tooltip" href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
+          𝕏
+          <span class="tooltip-text">Share on X (Twitter)</span>
+        </a>
+        <a class="share-btn share-facebook tooltip" href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+          f
+          <span class="tooltip-text">Share on Facebook</span>
+        </a>
+        <a class="share-btn share-whatsapp tooltip" href="https://wa.me/?text=${shareText}%20${shareUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+          💬
+          <span class="tooltip-text">Share on WhatsApp</span>
+        </a>
+        <button class="share-btn share-copy tooltip" aria-label="Copy link">
+          🔗
+          <span class="tooltip-text">Copy link</span>
+        </button>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -552,6 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      ${shareButtonsHtml}
       <div class="activity-card-actions">
         ${
           currentUser
@@ -570,6 +600,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       </div>
     `;
+
+    // Add click handler for copy link button
+    const copyButton = activityCard.querySelector(".share-copy");
+    if (copyButton) {
+      copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(activityShareUrl).then(() => {
+          showMessage(`Link to "${name}" copied to clipboard!`, "success");
+        }).catch(() => {
+          showMessage("Failed to copy link.", "error");
+        });
+      });
+    }
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
